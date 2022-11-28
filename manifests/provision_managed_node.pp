@@ -1,5 +1,4 @@
-class { 'control':
-}
+include 'provide_managed'
 
 class { 'gssh':
   path => '/usr/control/gssh',
