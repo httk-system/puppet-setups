@@ -1,4 +1,4 @@
-function setups() {
+function setups::apply() {
 
   $global_config = lookup("global")
 
