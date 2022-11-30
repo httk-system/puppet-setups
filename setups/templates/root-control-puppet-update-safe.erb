@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -e
+
+## If repos has unfinished work, abort
+
+for REPO in /etc/puppet/code/environments/production/ /etc/puppet/code/environments/production/site/private /etc/puppet/code/environments/production/site/public /etc/puppet/code/environments/production/modules/*; do
+
+    cd "$REPO"
+    if git diff-index --quiet --cached HEAD --; then
+	echo "Repo: '$REPO' has staged changes, aborting."
+	exit 1
+    fi
+
+    if git diff-files --quiet; then
+	echo "Repo '$REPO' has unstaged changes, aborting."
+	exit 1
+    fi
+    if -n "$(git ls-files --others --exclude-standard)"; then
+	echo "Repo '$REPO' has untracked files, aborting."
+	exit 1
+    fi
+
+done
+
+# Pull changes
+
+ROOTDIR="/etc/puppet/code/environments/production/"
+cd "$ROOTDIR"
+
+git pull --ff-only
+git submodule update --recursive --init
+
+if ! /usr/control/puppet-pull; then
+    echo "Could not fetch new state of repos, aborting."
+    exit 1
+fi
+
+if ! /usr/control/puppet-validate; then
+    echo "Validation of puppet control repo failed, aborting."
+    exit 1
+fi
+
+if ! /usr/control/puppet-apply; then
+    echo "Application of puppet manifest failed, aborting."
+    exit 1
+fi
+

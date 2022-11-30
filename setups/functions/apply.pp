@@ -11,15 +11,14 @@ function setups::apply() {
 
   if has_key(lookup("systems"),$sysid) {
     $system_config = lookup("systems")[$sysid]
-    notice("Applying common : $system_config")
   } else {
     $system_config = {}
     notice("Unknown system")
   }
 
   notice("Applying common : $system_config")
-  class { "setup::common":
-    config => $system_config
+  class { "setups::common":
+    config => $global_config + $system_config
   }
 
   $deps = lookup("setups").reduce([]) |$deps, $setup| {

@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -e
+
+if ! /usr/control/puppet-pull; then
+    echo "Your repos are out of sync with the remote ones, fix before trying to push."
+    exit 1
+fi
+
+ROOTDIR="/etc/puppet/code/environments/production/"
+cd "$ROOTDIR"
+
+for REPO in site/private site/public .; do
+
+    cd "$ROOTDIR/$REPO"
+
+    if ! git diff --quiet || ! git diff --cached --quiet; then
+	echo "CURRENT STATUS OF $ROOTDIR/$REPO:"
+	git status
+	echo "OK TO ADD ALL CHANGES? [y/n/ctrl+c]"
+	read ISOK
+	if [ "$ISOK" != "y" ]; then
+	    echo "Answer was not y, aborting"
+	    exit 1
+	fi
+	git add -A
+	if [ "$#" -eq 1 ]; then
+	    git commit -m "$1"
+	else
+	    git commit -m "$@"	    
+	fi
+    fi
+    if [ "$(git rev-list @{u}..@ --count)" -gt 0 ]; then
+	git push
+    else
+	echo "Nothing to do with repo in: $ROOTDIR/$REPO"
+    fi
+done

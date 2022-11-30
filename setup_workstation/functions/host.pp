@@ -33,6 +33,7 @@ function setup_workstation::host(
     'gnome-shell-extension-manager',
     'ttf-mscorefonts-installer',
     'sshfs',
+    'elpa-yaml-mode',
     'elpa-puppet-mode',
     'gparted',
     'blender',
