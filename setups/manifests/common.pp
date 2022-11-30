@@ -1,7 +1,7 @@
 class setups::common(
       $config,
 ){
-    include public_init
+    include provide_control
 
     # firewall config
     class { 'network_firewall::setup':
@@ -39,31 +39,31 @@ class setups::common(
         owner => root, group => root, mode => '0755',
         ensure  => present,
 	require => File['/usr/control'],
-        content => template('setup/root-control-puppet-apply.erb'),
+        content => template('setups/root-control-puppet-apply.erb'),
         ;
       '/usr/control/puppet-pull':
         owner => root, group => root, mode => '0755',
         ensure  => present,
 	require => File['/usr/control'],
-        content => template('setup/root-control-puppet-pull.erb'),
+        content => template('setups/root-control-puppet-pull.erb'),
         ;
       '/usr/control/puppet-push':
         owner => root, group => root, mode => '0755',
         ensure  => present,
 	require => File['/usr/control'],
-        content => template('setup/root-control-puppet-push.erb'),
+        content => template('setups/root-control-puppet-push.erb'),
         ;
       '/usr/control/puppet-validate':
         owner => root, group => root, mode => '0755',
         ensure  => present,
 	require => File['/usr/control'],
-        content => template('setup/root-control-puppet-validate.erb'),
+        content => template('setups/root-control-puppet-validate.erb'),
         ;      
       '/usr/control/puppet-update-safe':
         owner => root, group => root, mode => '0755',
         ensure  => present,
 	require => File['/usr/control'],
-        content => template('setup/root-control-puppet-update-safe.erb'),
+        content => template('setups/root-control-puppet-update-safe.erb'),
         ;
     }
 
