@@ -9,7 +9,13 @@ function setups() {
   }
   notice("System id: $sysid")
 
-  $system_config = lookup("systems")[$sysid]
+  if has_key(lookup("systems")) {
+    $system_config = lookup("systems")[$sysid]
+    notice("Applying common : $system_config")
+  } else {
+    $system_config = {}
+    notice("Unknown system")
+  }
 
   notice("Applying common : $system_config")
   class { "setup::common":
