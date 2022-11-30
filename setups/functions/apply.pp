@@ -9,7 +9,7 @@ function setups::apply() {
   }
   notice("System id: $sysid")
 
-  if has_key(lookup("systems")) {
+  if has_key(lookup("systems"),$sysid) {
     $system_config = lookup("systems")[$sysid]
     notice("Applying common : $system_config")
   } else {
