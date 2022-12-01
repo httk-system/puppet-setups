@@ -1,10 +1,11 @@
 class admins(
-  $admin_users,
+  $admins,
+  $home => '/home',
 ) {
 
       $home = "/home"
   
-      $admin_users.each |$username, $userparams| {
+      $admins.each |$username, $userparams| {
 
            if 'active' in $userparams {
 	     if $userparams['active'] {
@@ -27,20 +28,24 @@ class admins(
 	     shell => '/bin/bash',
 	     uid => $userparams['uid'],
 	   }
-           ->
-           file { "${home}/${username}/.ssh":
-             ensure => 'directory',
-             owner  => $username,
-             group  => $username,
-             mode   => '0700',
-           }
-           ->
-           file { "${home}/${username}/.ssh/authorized_keys_manage":
-             ensure => present,
-             source => "/etc/puppet/code/environments/production/security/authorized_keys.${username}",
-             owner  => $username,
-             group  => $username,
-             mode   => '0700',
+
+           if $ensure == 'present' {
+             
+             file { "${home}/${username}/.ssh":
+               ensure => 'directory',
+               owner  => $username,
+               group  => $username,
+               mode   => '0700',
+               require => User[$username],
+             }
+             ->
+             file { "${home}/${username}/.ssh/authorized_keys_manage":
+               ensure => present,
+               source => "/etc/puppet/code/environments/production/security/authorized_keys.${username}",
+               owner  => $username,
+               group  => $username,
+               mode   => '0700',
+             }
            }
       }
 }
