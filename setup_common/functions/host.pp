@@ -6,9 +6,9 @@ function setup_common::host(
   if $config['common_packages'] {
     manage::packages::present($config['common_packages'])
   }
-    
+
   # set locale
-  if $config['locales'] || $config['default_locale'] {
+  if $config['locales'] or $config['default_locale'] {
     class { 'locales':
       default_locale => $config['default_locale'],
       locales        => $config['locales'],
@@ -39,7 +39,7 @@ function setup_common::host(
       ensure  => present,
       require => File['/usr/control'],
       content => template('setups/root-control-puppet-validate.erb'),
-      ;      
+      ;
     '/usr/control/puppet-update-safe':
       owner => root, group => root, mode => '0755',
       ensure  => present,
@@ -47,13 +47,13 @@ function setup_common::host(
       content => template('setups/root-control-puppet-update-safe.erb'),
       ;
   }
-  
+
   if $config['motd'] {
 
     class { 'motd':
       message => $config['motd'],
     }
-    
+
   }
 
   if $config['admins'] {
@@ -61,7 +61,7 @@ function setup_common::host(
       admins => $config['admins'],
     }
   }
-    
+
   if $config['users'] {
     $return = setup_user_accounts::host($config)
   } else {

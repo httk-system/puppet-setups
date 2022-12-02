@@ -21,9 +21,9 @@ function setup_managed::host(
     fail2ban_exclude => $config['fail2ban_exclude'],
   }
 
-  $return = setup_common($config)
-  
+  $return = setup_common::host($config)
+
   # Return dependencies
   $return
-  
+
 }
