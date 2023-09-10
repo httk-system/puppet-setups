@@ -1,10 +1,7 @@
 class admins(
   $admins,
-  $home => '/home',
+  $home = '/home',
 ) {
-
-      $home = "/home"
-  
       $admins.each |$username, $userparams| {
 
            if 'active' in $userparams {
@@ -18,7 +15,7 @@ class admins(
 	   }
 
 	   $name = $userparams['name']
-	   
+
            user { $username:
 	     ensure => $ensure,
              managehome => $ensure ? { present => true, default => false, },
@@ -30,7 +27,7 @@ class admins(
 	   }
 
            if $ensure == 'present' {
-             
+
              file { "${home}/${username}/.ssh":
                ensure => 'directory',
                owner  => $username,

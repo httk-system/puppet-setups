@@ -41,12 +41,12 @@ function setup_bootserver::host(
       #  pxefilename  => '/usr/lib/PXELINUX/pxelinux.0',
       #}
 
-      dhcp::pool{ $config['dhcp_domain']:
-        network => $config['dhcp_subnet_ip'],
-        mask    => $config['dhcp_netmask'],
-        range   => [$config['dhcp_range']],
-        gateway => $bootserver_ip,
-      }
+      #dhcp::pool{ $config['dhcp_domain']:
+      #  network => $config['dhcp_subnet_ip'],
+      #  mask    => $config['dhcp_netmask'],
+      #  range   => [$config['dhcp_range']],
+      #  gateway => $bootserver_ip,
+      #}
 
       class { 'tftpd::server':
             ip => $bootserver_ip,

@@ -36,19 +36,19 @@ function setups::apply() {
         }
         if $role_system_name == $sysid {
 
-          if $system_config =~ Type[Hash] {
+          if $system_config =~ Hash {
             $config1 = $system_config
           } else {
             $config1 = {}
           }
 
-          if $setup_config_config =~ Type[Hash] {
+          if $setup_config_config =~ Hash {
             $config2 = $setup_config_config
           } else {
             $config2 = {}
           }
 
-          if $role_system_config =~ Type[Hash] {
+          if $role_system_config =~ Hash {
             $config3 = $role_system_config
           } else {
             $config3 = {}
