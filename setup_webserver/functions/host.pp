@@ -58,7 +58,7 @@ function setup_webserver::host(
   #	agree_tos => true,
   #	eff_email => false,
   #	https_redirect => true,
-  #	notify => Class['Apache::Service']    
+  #	notify_target => Class['Apache::Service']    
   #  }
 
     # Return dependecies
