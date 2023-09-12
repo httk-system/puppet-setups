@@ -10,7 +10,7 @@ fi
 ROOTDIR="/etc/puppet/code/environments/production/"
 cd "$ROOTDIR"
 
-for REPO in site/private site/public .; do
+for REPO in modules/local-* .; do
 
     cd "$ROOTDIR/$REPO"
 
@@ -27,7 +27,7 @@ for REPO in site/private site/public .; do
 	if [ "$#" -eq 1 ]; then
 	    git commit -m "$1"
 	else
-	    git commit -m "$@"	    
+	    git commit -m "$@"
 	fi
     fi
     if [ "$(git rev-list @{u}..@ --count)" -gt 0 ]; then

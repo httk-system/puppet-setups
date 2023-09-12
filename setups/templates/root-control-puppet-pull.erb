@@ -1,15 +1,8 @@
 #!/bin/bash
 
-set -e 
+set -e
 
 ROOTDIR="/etc/puppet/code/environments/production/"
 cd "$ROOTDIR"
 
-for REPO in . site/private site/public; do
-
-    cd "$ROOTDIR/$REPO"
-    if ! git pull --ff-only; then
-	echo "***** Failed to ff-only pull: $ROODIR/$REPO *****"
-    fi
-
-done
+git pull --recurse-submodules
