@@ -10,24 +10,33 @@ function setups::apply() {
 
   if has_key(lookup("systems"),$sysid) {
     $system_config = lookup("systems")[$sysid]
-    notice("System id: ${sysid}")
+    notice("==== Eval of setups for system id: ${sysid}")
   } else {
     $system_config = {}
-    notice("System id: ${sysid} (does not have system-specific stanza)")
+    notice("==== Eval of setups for system id: ${sysid} (note: no system-specific stanza)")
   }
 
   $all_aggrs = lookup("setups").reduce([]) |$aggr, $setup| {
     $setup_name=$setup.keys[0]
     $setup_config=$setup[$setup_name]
-    $setup_config_config = $setup_config[config]
+    if has_key($setup_config,"config") and $setup_config["config"] =~ Type[Hash] {
+      $setup_config_config = $setup_config["config"]
+    } else {
+      $setup_config_config = {}
+    }
     $role_aggr = $setup_config[roles].reduce([]) |$role_aggr, $role_val| {
       $role_name = $role_val[0]
       $role_systems = $role_val[1]
+
       $role_sys_aggr = $role_systems.reduce([]) |$role_sys_aggr, $role_system| {
         $role_type = type($role_system)
         if $role_type =~ Type[Hash] {
           $role_system_name=$role_system.keys[0]
-          $role_system_config=$role_system[$role_system_name]
+          if has_key($role_system,$role_system_name) and $role_system[$role_system_name] =~ Type[Hash] {
+            $role_system_config=$role_system[$role_system_name]
+          } else {
+            $role_system_config={}
+          }
         } elsif $role_type =~ Type[String] {
           $role_system_name=$role_system
           $role_system_config={}
@@ -55,8 +64,8 @@ function setups::apply() {
           }
           $config = $global_config + $config1 + $config2 + $config3
           notice("Applying role: $setup_name::$role_name : $config")
+          $new_aggr = call("setup_${setup_name}::${role_name}", $config)
 
-          $new_aggr = call("setup_$setup_name::$role_name", $config)
           if $new_aggr {
             $role_sys_aggr_new = $new_aggr
           } else {
@@ -65,6 +74,7 @@ function setups::apply() {
         } else {
           $role_sys_aggr_new = []
         }
+
         $role_sys_aggr + $role_sys_aggr_new
       }
       $role_aggr + $role_sys_aggr
@@ -72,11 +82,14 @@ function setups::apply() {
     $aggr + $role_aggr
   }
 
-  notice($all_aggrs)
+  # Here is a format example of how to return, e.g., two aggregators:
+  # [{ func => 'setup_example', config => $config, vals => { val =>5 } }, { func => 'setup_example', config => $config, vals => {val => 10} }]
+
   $grouped_aggrs = $all_aggrs.reduce({}) |$grouped_aggr, $aggr| {
-    $func = $aggr['aggr']
+    $func = $aggr['func']
     if $func in $grouped_aggr {
-      $new = $aggr['config'].reduce($grouped_aggr[$func]) |$grouped_aggr_red, $itm| {
+      $new_config = $grouped_aggr[$func]['config'] + $aggr['config']
+      $new = $aggr['vals'].reduce($grouped_aggr[$func]['aggr']) |$grouped_aggr_red, $itm| {
         $key=$itm[0]
         $val=$itm[1]
         if $key in $grouped_aggr_red {
@@ -85,16 +98,18 @@ function setups::apply() {
           $grouped_aggr_red + {$itm[0] => $itm[1]}
         }
       }
-      $grouped_aggr_new = $grouped_aggr + {$func => $new}
+      $grouped_aggr_new = $grouped_aggr + {$func => {config => $new_config, aggr => $new}}
     } else {
-      $grouped_aggr_new = $grouped_aggr + {$func => $aggr['config']}
+      $grouped_aggr_new = $grouped_aggr + {$func => {config => $aggr['config'], aggr => $aggr['vals']}}
     }
     $grouped_aggr_new
   }
 
-  # TODO: Actually resolve aggreators
-  notice("Resolving aggregators: $grouped_aggrs")
-
-  #lookup('classes', {merge => unique}).include
+  notice("==== Eval of collected aggregators")
+  $grouped_aggrs.each() |$func, $val| {
+    $config = $val['config'] + $val['aggr']
+    notice("== Call to ${func} with config: ${config}")
+    call($func, $config)
+  }
 
 }

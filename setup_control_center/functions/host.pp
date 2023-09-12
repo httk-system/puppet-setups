@@ -3,10 +3,32 @@ function setup_control_center::host(
 ) {
   include provide_control
 
-  $return = setup_common::host($config)
+  $aggr = setup_common::host($config)
 
-  # Return dependencies
-  #$return
+  file { "/etc/profile.d/ssh-auth-sock.sh":
+    ensure => 'present',
+    mode => '644',
+    content => "
+if command -v gpgconf &>/dev/null; then
+    export SSH_AUTH_SOCK=\"\$(gpgconf --list-dir agent-ssh-socket)\"
+fi
+    ",
+  }
 
-  $return + [{ aggr => 'gurk', config => { val =>5 } }, { aggr => 'gurk', config => {val => 10} }]
+  # We do this ALSO in bashrc, to make sure it is re-executed
+  # for new shells. However, also good to keep it in profile
+  # for other shells than bash.
+  file { "/etc/bash.bashrc.d/ssh-auth-sock.sh":
+    ensure => 'present',
+    mode => '644',
+    content => "
+if command -v gpgconf &>/dev/null; then
+    export SSH_AUTH_SOCK=\"\$(gpgconf --list-dir agent-ssh-socket)\"
+fi
+    ",
+    require => File['/etc/bash.bashrc.d'],
+  }
+
+  # Return aggregators
+  $aggr
 }
