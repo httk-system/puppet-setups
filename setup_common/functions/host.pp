@@ -3,6 +3,9 @@ function setup_common::host(
 ) {
   include provide_control
 
+  # Packages that are always needed
+  manage::packages::present(['git', 'screen', 'elpa-puppet-mode'])
+
   if $config['common_packages'] {
     manage::packages::present($config['common_packages'])
   }
