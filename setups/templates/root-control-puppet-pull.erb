@@ -5,4 +5,5 @@ set -e
 ROOTDIR="/etc/puppet/code/environments/production/"
 cd "$ROOTDIR"
 
-git pull --recurse-submodules
+git pull
+git submodule update --recursive --remote modules/local-* modules/upstream-*
