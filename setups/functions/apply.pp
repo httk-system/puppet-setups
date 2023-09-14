@@ -19,9 +19,9 @@ function setups::apply() {
   $all_aggrs = lookup("setups").reduce([]) |$aggr, $setup| {
     $setup_name=$setup.keys[0]
     $setup_config=$setup[$setup_name]
-    if has_key($setup_config,"config") and $setup_config["config"] =~ Type[Hash] {
+    if has_key($setup_config,"config") and $setup_config["config"] =~ Hash {
       $setup_config_config = $setup_config["config"]
-    } else {
+   } else {
       $setup_config_config = {}
     }
     $role_aggr = $setup_config[roles].reduce([]) |$role_aggr, $role_val| {
@@ -29,15 +29,14 @@ function setups::apply() {
       $role_systems = $role_val[1]
 
       $role_sys_aggr = $role_systems.reduce([]) |$role_sys_aggr, $role_system| {
-        $role_type = type($role_system)
-        if $role_type =~ Type[Hash] {
+        if $role_system =~ Hash {
           $role_system_name=$role_system.keys[0]
-          if has_key($role_system,$role_system_name) and $role_system[$role_system_name] =~ Type[Hash] {
+          if has_key($role_system,$role_system_name) and $role_system[$role_system_name] =~ Hash {
             $role_system_config=$role_system[$role_system_name]
           } else {
             $role_system_config={}
           }
-        } elsif $role_type =~ Type[String] {
+        } elsif $role_system =~ String {
           $role_system_name=$role_system
           $role_system_config={}
         } else {
