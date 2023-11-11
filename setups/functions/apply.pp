@@ -1,5 +1,4 @@
 function setups::apply() {
-
   $global_config = lookup("global")
 
   if $facts["system_id"] {
@@ -62,20 +61,22 @@ function setups::apply() {
             $config3 = {}
           }
           $config = $global_config + $config1 + $config2 + $config3
-          if defined("setup_${setup_name}::${role_name}") {
-            notice("Applying resource role: $setup_name::$role_name : $config")
-            Resource["setup_${setup_name}"] {
-              * => $config
+          if defined("setup_${setup_name}::${role_name}::meta") {
+            notice("Applying setup function declared by setup_${setup_name}::${role_name}::meta : $config")
+            include "setup_${setup_name}::${role_name}::meta"
+            $paramlist = getvar("setup_${setup_name}::${role_name}::meta::paramlist")
+            $setuptype = getvar("setup_${setup_name}::${role_name}::meta::setuptype")
+            $callargs = $paramlist.map |$param| {
+              if $config.has_key($param) {
+                $config[$param]
+              } else {
+                undef
+              }
             }
-            $role_sys_aggr_new = []
+            $role_sys_aggr_new = call("setup_${setup_name}::${role_name}", *$callargs)
           } else {
-            notice("Applying role function: $setup_name::$role_name : $config")
-            $new_aggr = call("setup_${setup_name}::${role_name}", $config)
-            if $new_aggr {
-              $role_sys_aggr_new = $new_aggr
-            } else {
-              $role_sys_aggr_new = []
-            }
+            notice("Applying meta-less role function: setup_$setup_name::$role_name : $config")
+            $role_sys_aggr_new = call("setup_${setup_name}::${role_name}", $config)
           }
         } else {
           $role_sys_aggr_new = []
