@@ -62,18 +62,24 @@ function setups::apply() {
             $config3 = {}
           }
           $config = $global_config + $config1 + $config2 + $config3
-          notice("Applying role: $setup_name::$role_name : $config")
-          $new_aggr = call("setup_${setup_name}::${role_name}", $config)
-
-          if $new_aggr {
-            $role_sys_aggr_new = $new_aggr
-          } else {
+          if defined("setup_${setup_name}::${role_name}") {
+            notice("Applying resource role: $setup_name::$role_name : $config")
+            Resource["setup_${setup_name}"] {
+              * => $config
+            }
             $role_sys_aggr_new = []
+          } else {
+            notice("Applying role function: $setup_name::$role_name : $config")
+            $new_aggr = call("setup_${setup_name}::${role_name}", $config)
+            if $new_aggr {
+              $role_sys_aggr_new = $new_aggr
+            } else {
+              $role_sys_aggr_new = []
+            }
           }
         } else {
           $role_sys_aggr_new = []
         }
-
         $role_sys_aggr + $role_sys_aggr_new
       }
       $role_aggr + $role_sys_aggr

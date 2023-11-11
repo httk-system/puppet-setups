@@ -9,15 +9,15 @@ function setup_workstation::host(
     'nano',
     'gpg',
     'scdaemon',
-    
+
     'bind9-dnsutils',
     'vim',
     'bzip2',
     'unison',
     'rsync',
-    'screen',  
+    'screen',
     'emacs',
-    
+
     'python3',
     'python3-docutils',
     'python3-pytest',
@@ -25,7 +25,7 @@ function setup_workstation::host(
     'python3-numpy',
     'python3-scipy',
     'python3-ase',
-    
+
     'ubuntu-gnome-desktop',
     'thunderbird',
     'cheese',
@@ -43,7 +43,7 @@ function setup_workstation::host(
     'pdftk',
     'ghostscript',
     'ttf-mscorefonts-installer'
-    
+
     'texlive-full',
     'gimp',
     'rawtherapee',
