@@ -21,6 +21,11 @@ function setup_managed::host(
     fail2ban_exclude => $config['fail2ban_exclude'],
   }
 
+  # NTP config
+  class { 'timesyncd':
+    ntpservers => $config['ntpservers'] ? { undef => 'pool.ntp.org', default => $config['ntpservers']}
+  }
+
   $return = setup_common::host($config)
 
   # Return dependencies
