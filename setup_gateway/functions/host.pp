@@ -151,6 +151,68 @@ function setup_gateway::host(
 
       }
 
+      if $config[nat_inout] {
+
+      $config[nat_inout].each |$v| {
+        $title=$v.keys[0]
+	$forward_cfg=$v[$title]
+	$ports = $forward_cfg[ports]
+	$proto = $forward_cfg[proto]
+	$dest = $forward_cfg[dest]
+
+        firewall { "110 nat_inout $title in":
+          dport   => $ports,
+          proto  => $proto,
+  	  iniface => $external_if,
+	  ctstate => ['NEW'],
+          action => 'accept',
+        }
+
+	firewall { "110 nat_inout $title forward":
+          dport   => $ports,
+          proto  => $proto,
+          outiface => $internal_if,
+  	  iniface => $external_if,
+	  ctstate => ['NEW','ESTABLISHED','RELATED'],
+	  chain => 'FORWARD',
+          action => 'accept',
+	}
+
+        firewall { "110 nat_inout $title out":
+          sport   => $ports,
+          proto  => $proto,
+          outiface => $external_if,
+	  iniface => $internal_if,
+	  ctstate => ['ESTABLISHED','RELATED'],
+	  chain => 'FORWARD',
+	  action => 'accept',
+        }
+
+        firewall { "120 nat_inout $title dnat preroute":
+          chain    => 'PREROUTING',
+          dport   => $ports,
+          proto  => $proto,
+	  iniface => $external_if,
+          jump => 'DNAT',
+	  todest => $dest,
+	  table => 'nat',
+        }
+
+        firewall { "120 nat_inout $title dnat postroute":
+          chain    => 'POSTROUTING',
+          dport   => $ports,
+          proto  => $proto,
+          outiface => $internal_if,
+  	  destination => $dest,
+          jump => 'SNAT',
+	  tosource => $config[ip],
+	  table => 'nat',
+        }
+
+      }
+
+      }
+
       if $config[nat_in] {
 
       $config[nat_in].each |$v| {
@@ -198,20 +260,10 @@ function setup_gateway::host(
 	  table => 'nat',
         }
 
-        firewall { "120 nat_in $title dnat postroute":
-          chain    => 'POSTROUTING',
-          dport   => $ports,
-          proto  => $proto,
-          outiface => $internal_if,
-  	  destination => $dest,
-          jump => 'SNAT',
-	  tosource => $config[ip],
-	  table => 'nat',
-        }
-
       }
 
       }
+
       
       # Return dependecies
       []
