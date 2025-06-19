@@ -7,7 +7,7 @@ function setups::apply() {
     $sysid = $facts["hostname"]
   }
 
-  if has_key(lookup("systems"),$sysid) {
+  if $sysid in lookup("systems") {
     $system_config = lookup("systems")[$sysid]
     notice("==== Eval of setups for system id: ${sysid}")
   } else {
@@ -18,7 +18,7 @@ function setups::apply() {
   $all_aggrs = lookup("setups").reduce([]) |$aggr, $setup| {
     $setup_name=$setup.keys[0]
     $setup_config=$setup[$setup_name]
-    if has_key($setup_config,"config") and $setup_config["config"] =~ Hash {
+    if "config" in $setup_config and $setup_config["config"] =~ Hash {
       $setup_config_config = $setup_config["config"]
    } else {
       $setup_config_config = {}
@@ -30,7 +30,7 @@ function setups::apply() {
       $role_sys_aggr = $role_systems.reduce([]) |$role_sys_aggr, $role_system| {
         if $role_system =~ Hash {
           $role_system_name=$role_system.keys[0]
-          if has_key($role_system,$role_system_name) and $role_system[$role_system_name] =~ Hash {
+          if $role_system_name in $role_system and $role_system[$role_system_name] =~ Hash {
             $role_system_config=$role_system[$role_system_name]
           } else {
             $role_system_config={}
