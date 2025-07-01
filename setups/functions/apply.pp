@@ -67,7 +67,7 @@ function setups::apply() {
             $paramlist = getvar("setup_${setup_name}::${role_name}::meta::paramlist")
             $setuptype = getvar("setup_${setup_name}::${role_name}::meta::setuptype")
             $callargs = $paramlist.map |$param| {
-              if $config.has_key($param) {
+              if $param in $config {
                 $config[$param]
               } else {
                 undef
