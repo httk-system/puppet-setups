@@ -41,7 +41,7 @@ function setup_gateway::host(
 #	  destination => $dest,
 #  	  iniface => $internal_if,
 #	  ctstate => ['NEW'],
-#          action => 'accept',
+#          jump => 'accept',
 #        }
 #
 #	firewall { "110 nat_redirect $title forward":
@@ -51,7 +51,7 @@ function setup_gateway::host(
 #  	  iniface => $internal_if,
 #	  ctstate => ['NEW','ESTABLISHED','RELATED'],
 #	  chain => 'FORWARD',
-#          action => 'accept',
+#          jump => 'accept',
 #	}
 #
 #        firewall { "110 nat_redirect $title in":
@@ -60,7 +60,7 @@ function setup_gateway::host(
 #          outiface => $internal_if,
 #	  ctstate => ['ESTABLISHED','RELATED'],
 #	  chain => 'FORWARD',
-#	  action => 'accept',
+#	  jump => 'accept',
 #        }
 #
 #        firewall { "120 nat_redirect $title dnat preroute":
@@ -114,7 +114,7 @@ function setup_gateway::host(
 	  source => $source,
   	  iniface => $internal_if,
 	  ctstate => ['NEW'],
-          action => 'accept',
+          jump => 'accept',
         }
 
 	firewall { "110 nat_out $title forward":
@@ -125,7 +125,7 @@ function setup_gateway::host(
   	  iniface => $internal_if,
 	  ctstate => ['NEW','ESTABLISHED','RELATED'],
 	  chain => 'FORWARD',
-          action => 'accept',
+          jump => 'accept',
 	}
 
         firewall { "110 nat_out $title in":
@@ -135,7 +135,7 @@ function setup_gateway::host(
 	  iniface => $external_if,
 	  ctstate => ['ESTABLISHED','RELATED'],
 	  chain => 'FORWARD',
-	  action => 'accept',
+	  jump => 'accept',
         }
 
       	firewall { "120 nat_out $title snat":
@@ -165,7 +165,7 @@ function setup_gateway::host(
           proto  => $proto,
   	  iniface => $external_if,
 	  ctstate => ['NEW'],
-          action => 'accept',
+          jump => 'accept',
         }
 
 	firewall { "110 nat_inout $title forward":
@@ -175,7 +175,7 @@ function setup_gateway::host(
   	  iniface => $external_if,
 	  ctstate => ['NEW','ESTABLISHED','RELATED'],
 	  chain => 'FORWARD',
-          action => 'accept',
+          jump => 'accept',
 	}
 
         firewall { "110 nat_inout $title out":
@@ -185,7 +185,7 @@ function setup_gateway::host(
 	  iniface => $internal_if,
 	  ctstate => ['ESTABLISHED','RELATED'],
 	  chain => 'FORWARD',
-	  action => 'accept',
+	  jump => 'accept',
         }
 
         firewall { "120 nat_inout $title dnat preroute":
@@ -227,7 +227,7 @@ function setup_gateway::host(
           proto  => $proto,
   	  iniface => $external_if,
 	  ctstate => ['NEW'],
-          action => 'accept',
+          jump => 'accept',
         }
 
 	firewall { "110 nat_in $title forward":
@@ -237,7 +237,7 @@ function setup_gateway::host(
   	  iniface => $external_if,
 	  ctstate => ['NEW','ESTABLISHED','RELATED'],
 	  chain => 'FORWARD',
-          action => 'accept',
+          jump => 'accept',
 	}
 
         firewall { "110 nat_in $title out":
@@ -247,7 +247,7 @@ function setup_gateway::host(
 	  iniface => $internal_if,
 	  ctstate => ['ESTABLISHED','RELATED'],
 	  chain => 'FORWARD',
-	  action => 'accept',
+	  jump => 'accept',
         }
 
         firewall { "120 nat_in $title dnat preroute":
